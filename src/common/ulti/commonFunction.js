@@ -19,10 +19,10 @@ function converDanhSachMaDanhMuc() {
   let options = []
   Object.keys(CONSTANTS.MA_DANH_MUC).map(function (key, index) {
     options.push({
-      Ma: CONSTANTS.MA_DANH_MUC[key].Ma,
-      Ten: CONSTANTS.MA_DANH_MUC[key].Ten,
-      value: CONSTANTS.MA_DANH_MUC[key].Ma,
-      label: CONSTANTS.MA_DANH_MUC[key].Ten
+      Ma: CONSTANTS.MA_DANH_MUC[`${key}`].Ma,
+      Ten: CONSTANTS.MA_DANH_MUC[`${key}`].Ten,
+      value: CONSTANTS.MA_DANH_MUC[`${key}`].Ma,
+      label: CONSTANTS.MA_DANH_MUC[`${key}`].Ten
     })
   });
   return options
@@ -49,8 +49,8 @@ const compareObject = function (obj1, obj2) {
 };
 
 const compare = function (a, b, key) {
-  const A = parseInt(a['STT'])
-  const B = parseInt(b['STT'])
+  const A = parseInt(a[`${'STT'}`])
+  const B = parseInt(b[`${'STT'}`])
 
   let comparison = 0;
   if (A > B) {
@@ -74,11 +74,11 @@ const checkRole = function (type, roles) {
   return index !== -1;
 };
 
-const checkEmail = function (email) {
-  return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-    email
-  );
-};
+// const checkEmail = function (email) {
+//   return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+//     email
+//   );
+// };
 const checkPhoneNumber = function (phone) {
   return /((09|03|07|08|05)+([0-9]{8})\b)/g.test(phone);
 };
@@ -163,8 +163,8 @@ function convertSelectedOptions(obj, value, label) {
     obj.forEach((item, index) => {
       let vl = item[value] || (item._id ? (item._id.$oid || item._id) : null)
       let lb = item[label] || item.Ten
-      obj[index].value = vl
-      obj[index].label = lb
+      obj[`${index}`].value = vl
+      obj[`${index}`].label = lb
     })
   } else {
     let vl = obj[value] || (obj._id ? (obj._id.$oid || obj._id) : null)
@@ -313,7 +313,7 @@ export {
   toDateDisplay,
   checkPhoneNumber,
   changeAlias,
-  checkEmail,
+  // checkEmail,
   parseJwt,
   isEmpty,
   checkValidate,

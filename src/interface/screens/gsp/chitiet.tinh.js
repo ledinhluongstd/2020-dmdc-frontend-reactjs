@@ -83,15 +83,15 @@ class ChiTiet extends Component {
   _handleExportExcel = (ref) => {
     // ví dụ xuất excel tại bảng đang có
     let myRows = [['Thông tin danh mục quốc gia']], maxCol = 0
-    let table = ReactDOM.findDOMNode(this.refs[ref]);
+    let table = ReactDOM.findDOMNode(this.refs[`${ref}`]);
     for (let tbindex = 0; tbindex < table.children.length; tbindex++) {
-      let tb = table.children[tbindex]
+      let tb = table.children[`${tbindex}`]
       for (let trindex = 0; trindex < tb.children.length; trindex++) {
         let row = []
-        let tr = tb.children[trindex]
+        let tr = tb.children[`${trindex}`]
         maxCol = tr.children.length > maxCol ? tr.children.length : maxCol
         for (let thindex = 0; thindex < tr.children.length; thindex++) {
-          let th = tr.children[thindex]
+          let th = tr.children[`${thindex}`]
           row.push(th.innerText)
         }
         myRows.push(row)
@@ -233,7 +233,7 @@ class ChiTiet extends Component {
                           <td className='text-center'>{index + 1}</td>
                           {
                             item && Object.keys(item).map(function (key, ind) {
-                              return (<td key={ind}>{item[key]}</td>)
+                              return (<td key={ind}>{item[`${key}`]}</td>)
                             })
                           }
                           <td>
@@ -280,7 +280,7 @@ class ChiTiet extends Component {
                             disabled={true}
                             readOnly={true}
                             onChange={null}
-                            defaultValue={detail[key] || ''}
+                            defaultValue={detail[`${key}`] || ''}
                             type="text"
                             label={key}
                           />

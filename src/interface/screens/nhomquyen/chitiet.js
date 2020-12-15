@@ -48,7 +48,7 @@ class ChiTiet extends Component {
         this.state.form = data;
         danhsach.forEach((item, index) => {
           QuyenChucNang.forEach((qcn) => {
-            if (item.Ma === qcn.Ma) danhsach[index] = qcn;
+            if (item.Ma === qcn.Ma) danhsach[`${index}`] = qcn;
           });
         });
         this.state.danhsach = danhsach;
