@@ -1,10 +1,10 @@
 export const PORT = 3001
-export const HTTP_API = "http://192.168.1.15:3000"
+export const HTTP_API = "http://192.168.1.19:3000"
 export const HTTPS_API = "http://192.168.1.13:3000"
 export const NEXT_CLOUD_IFRAME = 'http://192.168.3.179:8080/apps/richdocuments/index'
 export const GSP_DMDC = 'https://api.ngsp.gov.vn/dmdc/1.0/AllCategory'
 export const TEMPLATE = 'web'// 'admin' // 'web' // ADMIN or WEB for view style web
 export const APP_NAME = 'Phần mềm quản lý danh mục điện tử dùng chung'
-export const NODE_ENV = 'production'//'production' //'development'
+export const NODE_ENV = 'development'//'production' //'development'
 export const DEV = true
 export const BUILD_FOR = 'BQP' // BQP vs TINH
