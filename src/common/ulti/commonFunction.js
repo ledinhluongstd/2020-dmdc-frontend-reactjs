@@ -148,8 +148,8 @@ function toDateDisplay(data) {
 function convertSelectOptions(array, value, label, valueDisabled = []) {
   let arr = []
   array.map((item) => {
-    let checkDisabed = valueDisabled.findIndex(x => (x[value] || x._id.$oid || x._id) === (item[value] || item._id.$oid || item._id)) !== -1
-    item.value = item[value] || item._id.$oid || item._id
+    let checkDisabed = valueDisabled.findIndex(x => (x[`${value}`] || x._id.$oid || x._id) === (item[`${value}`] || item._id.$oid || item._id)) !== -1
+    item.value = item[`${value}`] || item._id.$oid || item._id
     item.label = item[label]
     item.isDisabled = checkDisabed
     arr.push(item)
@@ -161,13 +161,13 @@ function convertSelectedOptions(obj, value, label) {
   if (!obj) return null
   if (obj.length !== undefined && obj != 0) {
     obj.forEach((item, index) => {
-      let vl = item[value] || (item._id ? (item._id.$oid || item._id) : null)
+      let vl = item[`${value}`] || (item._id ? (item._id.$oid || item._id) : null)
       let lb = item[label] || item.Ten
       obj[`${index}`].value = vl
       obj[`${index}`].label = lb
     })
   } else {
-    let vl = obj[value] || (obj._id ? (obj._id.$oid || obj._id) : null)
+    let vl = obj[`${value}`] || (obj._id ? (obj._id.$oid || obj._id) : null)
     let lb = obj[label] || obj.Ten
     if (vl && lb) {
       obj.value = vl

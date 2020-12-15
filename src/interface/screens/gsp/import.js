@@ -104,7 +104,9 @@ class ImportDMDCQG extends Component {
       dataTmp.sort((a, b) => (a.TotalItem < b.TotalItem) ? 1 : ((b.TotalItem < a.TotalItem) ? -1 : 0));
 
       // kiểm tra dữ liệu khác nhau
-      let query = { page: 1, pagesize: 1000, count: true, keys: JSON.stringify({ BanGhi: 0 }) }
+      let query = { page: 1, pagesize: 1000, count: true
+        // , keys: JSON.stringify({ BanGhi: 0 }) 
+      }
       let dmdcqg = await tbDMDCQG.getAll(new URLSearchParams(query).toString())
       if (!dmdcqg) {
         this.props.dispatch(fetchToastNotify({ type: CONSTANTS.ERROR, data: 'Có lỗi, vui lòng thử lại' }))

@@ -150,14 +150,14 @@ class ChiTiet extends Component {
     this.forceUpdate();
   };
   _handleChangeCheckBox = (indexCheck, index) => {
-    let check = this.state.thuoctinhBanGhi[`${index}`].LuaChon[indexCheck].Checked
+    let check = this.state.thuoctinhBanGhi[`${index}`].LuaChon[`${indexCheck}`].Checked
     check = !check
-    this.state.thuoctinhBanGhi[`${index}`].LuaChon[indexCheck].Checked = check
+    this.state.thuoctinhBanGhi[`${index}`].LuaChon[`${indexCheck}`].Checked = check
     this.forceUpdate()
   }
   _handleChangeRadio = (indexCheck, index, item) => {
     let luachon = cmFunction.clone(item.LuaChon)
-    let luachonSelected = luachon[indexCheck]
+    let luachonSelected = luachon[`${indexCheck}`]
     let arr = []
     luachon = luachon.map((item, indexLuaChon) => {
       if (cmFunction.compareObject(item, luachonSelected)) {
@@ -326,10 +326,10 @@ class ChiTiet extends Component {
     return flag
   }
   _checkItemCheckBox = (item, indexCheck) => {
-    return item.LuaChon[indexCheck].Checked
+    return item.LuaChon[`${indexCheck}`].Checked
   }
   _checkItemRadio = (item, indexCheck) => {
-    return item.LuaChon[indexCheck].Checked
+    return item.LuaChon[`${indexCheck}`].Checked
   }
   _checkDanhMuc = async (Ma) => {
     let flag = false

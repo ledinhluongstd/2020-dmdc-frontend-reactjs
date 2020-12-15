@@ -217,6 +217,7 @@ class DanhSach extends Component {
     parsed.page = parseInt(page) || CONSTANTS.DEFAULT_PAGE
     parsed.pagesize = parseInt(pagesize) || CONSTANTS.DEFAULT_PAGESIZE
     parsed.count = true
+    parsed.keys = JSON.stringify({ BanGhi: 0 })
     // parsed.sort_by = "STT"
     if (search.Ten) {
       // filter['Ten'] = cmFunction.regexText(search.Ten.trim())

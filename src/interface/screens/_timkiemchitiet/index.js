@@ -638,7 +638,7 @@ class TimKiemChiTiet extends Component {
         });
     };
     _checkItemRadio = (item, indexCheck) => {
-        return item.LuaChon[indexCheck].Checked;
+        return item.LuaChon[`${indexCheck}`].Checked;
     };
 
     _Danhmucdungchung = () => {
