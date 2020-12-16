@@ -251,12 +251,12 @@ class DanhSach extends Component {
     return new URLSearchParams(parsed).toString()
   }
   _createFilterSearch = () => {
-    let { search,donviSelected,linhvucSelected } = this.state
+    let { search, donviSelected, linhvucSelected } = this.state
     let parsed = queryString.parse(this.props.location.search);
     let { page, pagesize } = parsed
     let filter = {}
     // if (search.Ten) filter['NguoiDung.name'] = cmFunction.regexText(search.Ten.trim())
-    if (search.Ten||donviSelected||linhvucSelected) {
+    if (search.Ten || donviSelected || linhvucSelected) {
       if (search.Ten) filter['$or'] = [
         { 'Ten': cmFunction.regexText(search.Ten.trim()) },
         { 'Ma': cmFunction.regexText(search.Ten.trim()) },
@@ -264,13 +264,14 @@ class DanhSach extends Component {
         // { 'NhomDanhMuc.Ten': cmFunction.regexText(search.Ten.trim()) },
         // { 'LinhVuc.Ten': cmFunction.regexText(search.Ten.trim()) },
       ]
-      if(linhvucSelected) filter['LinhVuc.Ten'] = linhvucSelected.Ten
-      if(donviSelected) filter['DonViCha.Ten'] = donviSelected.Ten
+      if (linhvucSelected) filter['LinhVuc.Ten'] = linhvucSelected.Ten
+      if (donviSelected) filter['DonViCha.Ten'] = donviSelected.Ten
       parsed.filter = JSON.stringify(filter)
     }
     parsed.page = parseInt(page) || CONSTANTS.DEFAULT_PAGE
     parsed.pagesize = parseInt(pagesize) || CONSTANTS.DEFAULT_PAGESIZE
     parsed.count = true
+    parsed.keys = JSON.stringify({ tbBanGhi: 0 })
     this.state.page = parseInt(page) || CONSTANTS.DEFAULT_PAGE
     this.state.pagesize = parseInt(pagesize) || CONSTANTS.DEFAULT_PAGESIZE
     this.forceUpdate()
@@ -524,16 +525,16 @@ class DanhSach extends Component {
                   </div>
                 </div>
                 <div className="form-row form-group form-custom">
-                    <div className="col-md-10">
-                      <input className="form-control" onChange={this._handleChangeSearchElement}
-                        value={search.Ten || ''} type="text" id="Ten" placeholder='Tìm kiếm tên, mã danh mục' />
-                    </div>
-                    <div className="col-md-2">
-                      <button onClick={this._handleSearch} className="btn btn-outline-primary border-radius ">
-                        <i className="fas fa-search" />Tìm kiếm
-                    </button>
-                    </div>
+                  <div className="col-md-10">
+                    <input className="form-control" onChange={this._handleChangeSearchElement}
+                      value={search.Ten || ''} type="text" id="Ten" placeholder='Tìm kiếm tên, mã danh mục' />
                   </div>
+                  <div className="col-md-2">
+                    <button onClick={this._handleSearch} className="btn btn-outline-primary border-radius ">
+                      <i className="fas fa-search" />Tìm kiếm
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>}
             {this.dataTable()}
@@ -581,7 +582,7 @@ class DanhSach extends Component {
                           <td className='text-left'>
                             <Link to={'/danh-muc-dtdc/danh-muc/' + item._id.$oid || item._id} title="Chi tiết" className="btn btn-sm btn-outline-info border-radius"><i className="fas fa-pencil-alt" /></Link>
                             {(checkSuperAdmin || this._checkRole(LoginRes)) && ((item.PheDuyet == 1)) && <button onClick={() => this._handleConfirmApprove(item._id.$oid || item._id)} title="Phê duyệt danh mục" className="btn btn-sm btn-outline-success border-radius" style={{ display: (item.PheDuyet == 3) ? 'none' : 'inline' }}>
-                              <i className="fas fa-user-check"></i>
+                              <i className="fas fa-check"></i>
                             </button>}
                             {(checkSuperAdmin || this._checkRole(LoginRes)) && <button onClick={() => this._handleConfirmUnapprove(item._id.$oid || item._id)} title="Hủy phê duyệt danh mục" className="btn btn-sm btn-outline-primary border-radius" style={{ display: (item.PheDuyet == 3) ? 'inline' : 'none' }}>
                               <i className="fas fa-ban"></i>
@@ -590,7 +591,7 @@ class DanhSach extends Component {
                               <i className="fas fa-trash" />
                             </button>}
                             {!checkSuperAdmin && !this._checkRole(LoginRes) && !this._checkRoleThuTruong(LoginRes) && <button onClick={() => this._handleConfirmApproveDanhMuc(item._id.$oid || item._id)} title="Yêu cầu phê duyệt" className="btn btn-sm btn-outline-success border-radius" style={{ display: (item.PheDuyet == 2) ? 'inline' : 'none' }}>
-                              <i className="fas fa-user-check"></i>
+                              <i className="fas fa-check"></i>
                             </button>}
                           </td>
                         </tr>

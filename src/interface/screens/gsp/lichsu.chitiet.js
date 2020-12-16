@@ -8,7 +8,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import axios from 'axios';
 import moment from 'moment';
 import * as cmFunction from 'common/ulti/commonFunction';
-import * as tbLogApi from 'controller/services/tbLogApiServices'
+import * as tbLogDMDCQGApi from 'controller/services/tbLogDMDCQGApiServices'
 import { fetchToastNotify } from '../../../controller/redux/app-reducer';
 
 class ChiTiet extends Component {
@@ -36,7 +36,7 @@ class ChiTiet extends Component {
     let id = this.props.match.params.id;
     this.state.isInsert = id == 0;
     if (!this.state.isInsert) {
-      let data = await tbLogApi.getById(id);
+      let data = await tbLogDMDCQGApi.getById(id);
       if (data) {
         this.state.form = data.request.body;
       }

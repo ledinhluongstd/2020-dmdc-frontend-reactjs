@@ -36,7 +36,7 @@ class ImportDMDCQG extends Component {
   componentDidMount = async () => {
     let { LoginRes } = this.props
     if (LoginRes.roles !== SUPER.roles) {
-      cmFunction.goBack()
+      // cmFunction.goBack()
     }
   }
 
@@ -82,6 +82,13 @@ class ImportDMDCQG extends Component {
 
     delete b._id
     delete b._etag
+    delete b.code
+    delete b.createdAt
+    delete b.createdBy
+    delete b.isActive
+    delete b.checked
+    delete b.modifiedAt
+    delete b.modifiedBy
 
     return cmFunction.compareObject(a, b)
   }
@@ -105,7 +112,7 @@ class ImportDMDCQG extends Component {
 
       // kiểm tra dữ liệu khác nhau
       let query = {
-        page: 1, pagesize: 1000, count: true 
+        page: 1, pagesize: 1000, count: true
         // , keys: JSON.stringify({ BanGhi: 0 }) 
       }
       let dmdcqg = await tbDMDCQG.getAll(new URLSearchParams(query).toString())
@@ -173,11 +180,15 @@ class ImportDMDCQG extends Component {
         delete itemUpdate.checked
 
         if (dataExist.status === true) {
+          console.log(dataExist)
           delete itemUpdate._id
-          let res = await tbDMDCQG.updatePutById(dataExist._id.$oid, itemUpdate)
+          delete itemUpdate._etag
+          let res = await tbDMDCQG.updatePutById(dataExist.code, itemUpdate)
           if (res) { listInserted.push(id) } else { listError.push(id) }
         } else if (dataExist.status === false) {
           delete itemUpdate.checked
+          delete itemUpdate._id
+          delete itemUpdate._etag
           let res = await tbDMDCQG.create(itemUpdate)
           if (res) { listInserted.push(id) } else { listError.push(id) }
         }

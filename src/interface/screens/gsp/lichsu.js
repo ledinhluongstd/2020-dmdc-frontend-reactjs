@@ -14,7 +14,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import { Other } from 'interface/screens/error'
 import { __DEV__, SUPER } from "../../../common/ulti/constants";
 import * as CONSTANTS from 'common/ulti/constants';
-import * as tbLogApi from 'controller/services/tbLogApiServices'
+import * as tbLogDMDCQGApi from 'controller/services/tbLogDMDCQGApiServices'
 
 import * as tbDMDCQG from 'controller/services/tbDMDCQGServices'
 
@@ -127,7 +127,7 @@ class LichSuDMDCQG extends Component {
     return new URLSearchParams(parsed).toString()
   }
   _getDanhSachLogApi = async (query) => {
-    let data = await tbLogApi.getAll(query)
+    let data = await tbLogDMDCQGApi.getAll(query)
     this.state.danhsach = data && data._embedded ? data._embedded : [];
     this.state._size = data._size || 0
     this.state._total_pages = data._total_pages || 0
@@ -168,7 +168,7 @@ class LichSuDMDCQG extends Component {
     let { danhsach } = this.state, axiosReq = [], count = 0
     danhsach.forEach((item, index) => {
       if (item.checked)
-        axiosReq.push(tbLogApi.deleteById(item._id.$oid || item._id))
+        axiosReq.push(tbLogDMDCQGApi.deleteById(item._id.$oid || item._id))
     });
 
     if (!axiosReq.length) return
@@ -190,7 +190,7 @@ class LichSuDMDCQG extends Component {
     let { danhsach } = this.state, axiosReq = [], count = 0
     danhsach.forEach((item, index) => {
       if (item.checked)
-        axiosReq.push(tbLogApi.lockById(item._id.$oid || item._id))
+        axiosReq.push(tbLogDMDCQGApi.lockById(item._id.$oid || item._id))
     });
 
     if (!axiosReq.length) return
@@ -209,7 +209,7 @@ class LichSuDMDCQG extends Component {
   }
 
   _handleDeleteOne = async (id) => {
-    let axiosRes = await tbLogApi.deleteById(id)
+    let axiosRes = await tbLogDMDCQGApi.deleteById(id)
     if (axiosRes) {
       this.props.dispatch(fetchToastNotify({ type: CONSTANTS.SUCCESS, data: "Xóa thành công" }))
       this._getDanhSachLogApi(this._createFilter())
