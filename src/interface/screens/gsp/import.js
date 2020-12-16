@@ -27,9 +27,16 @@ class ImportDMDCQG extends Component {
       data: [],
       isLoad: false,
       isCheck: false,
+
+      dataBanGhi: [],
+      jsonDataBanGhi: [],
+      isLoadBanGhi: false,
+      isCheckBanGhi: false,
+
       listInserted: [],
       listError: [],
-      listNonDiffrent: []
+      listNonDiffrent: [],
+
     }
   }
 
@@ -44,7 +51,8 @@ class ImportDMDCQG extends Component {
 
   }
 
-  _handleSelectFile = (event) => {
+  _handleSelectFileTb = (event) => {
+    console.log(event.target.files)
     try {
       let fileObj = event.target.files[0];
       if (!fileObj) return
@@ -58,6 +66,29 @@ class ImportDMDCQG extends Component {
       fileReader.onload = e => {
         let result = e.target.result
         self.setState({ data: result, isLoad: true }, () => {
+          self.props.dispatch(fetchWait(false))
+        })
+      };
+    } catch (e) {
+      console.log(e)
+      this.props.dispatch(fetchToastNotify({ type: CONSTANTS.ERROR, data: 'Có lỗi' }))
+    }
+  }
+
+  _handleSelectFileBanGhi = (event) => {
+    try {
+      let fileObj = event.target.files[0];
+      if (!fileObj) return
+      this.state.isCheck = false
+      this.state.isLoadBanGhi = false
+      this.forceUpdate()
+      this.props.dispatch(fetchWait(true))
+      let self = this
+      const fileReader = new FileReader();
+      fileReader.readAsText(fileObj, "UTF-8");
+      fileReader.onload = e => {
+        let result = e.target.result
+        self.setState({ dataBanGhi: result, isLoadBanGhi: true }, () => {
           self.props.dispatch(fetchWait(false))
         })
       };
@@ -94,26 +125,39 @@ class ImportDMDCQG extends Component {
   }
 
   _handleConvert = async () => {
-    let { isLoad, isCheck, data } = this.state
-    if (!isLoad) {
+    let { isLoad, isCheck, isLoadBanGhi, isCheckBanGhi, data, dataBanGhi } = this.state
+    if (!isLoad || !isLoadBanGhi) {
       this.props.dispatch(fetchToastNotify({ type: CONSTANTS.WARNING, data: 'Chọn file dữ liệu' }))
       return
     }
-    if (isCheck) {
+    if (isCheck && isCheckBanGhi) {
       this.props.dispatch(fetchToastNotify({ type: CONSTANTS.WARNING, data: 'Dữ liệu đã được chuyển đổi' }))
       return
     }
     this.props.dispatch(fetchWait(true))
-
     try {
+      // let dataTmp = JSON.parse(data)
+      // let dataBanGhiTmp = JSON.parse(dataBanGhi)
+      // dataTmp.sort((a, b) => (a.TotalItem < b.TotalItem) ? 1 : ((b.TotalItem < a.TotalItem) ? -1 : 0));
 
+      // console.log('dataTmp ', dataTmp.length)
+      // console.log('dataBanGhiTmp ', dataBanGhiTmp.length)
+
+      //////////////////////////////////////////////
       let dataTmp = JSON.parse(data)
+      let dataBanGhiTmp = JSON.parse(dataBanGhi)
       dataTmp.sort((a, b) => (a.TotalItem < b.TotalItem) ? 1 : ((b.TotalItem < a.TotalItem) ? -1 : 0));
 
+      dataTmp.map((it1, id1) => {
+        dataBanGhiTmp.map((it2, id2) => {
+          if (it2.CategoryCode === it1.CategoryCode) {
+            dataTmp[id1].BanGhi = it2.BanGhi
+          }
+        })
+      })
       // kiểm tra dữ liệu khác nhau
       let query = {
-        page: 1, pagesize: 1000, count: true
-        // , keys: JSON.stringify({ BanGhi: 0 }) 
+        page: 1, pagesize: 1000, count: true, keys: JSON.stringify({ BanGhi: 0 })
       }
       let dmdcqg = await tbDMDCQG.getAll(new URLSearchParams(query).toString())
       if (!dmdcqg) {
@@ -129,21 +173,20 @@ class ImportDMDCQG extends Component {
           if (check) listNonDiffrent.push(dataTmp[`${index}`]._id.$oid)
         }
       })
-
-
-      this.setState({ jsonData: dataTmp, listNonDiffrent: listNonDiffrent, isCheck: true }, () => {
+      this.setState({ jsonData: dataTmp, listNonDiffrent: listNonDiffrent, isCheck: true, isCheckBanGhi: true }, () => {
         this.props.dispatch(fetchWait(false))
       })
     } catch (e) {
       console.log(e)
       this.state.isCheck = false
+      this.state.isCheckBanGhi = false
       this.forceUpdate()
       this.props.dispatch(fetchWait(false))
     }
   }
 
   _handleUpload = async () => {
-    let { isLoad, isCheck, jsonData, data } = this.state
+    let { isLoad, isCheck, jsonData } = this.state
     if (!isLoad || !isCheck) {
       this.props.dispatch(fetchToastNotify({ type: CONSTANTS.WARNING, data: 'Chọn file dữ liệu và thực hiện chuyển đổi' }))
       return
@@ -211,7 +254,7 @@ class ImportDMDCQG extends Component {
 
   render() {
     let { jsonData, value, listInserted, listError, listNonDiffrent } = this.state
-    let { isCheck, isLoad } = this.state
+    let { isCheck, isLoad, isLoadBanGhi, isCheckBanGhi } = this.state
     let { } = this.state
     try {
       return (
@@ -232,15 +275,27 @@ class ImportDMDCQG extends Component {
                 <button onClick={this._handleConvert} className="btn btn-sm btn-outline-info border-radius pull-right" title="Tìm kiếm">
                   <i className="fas fa-exchange-alt"></i>Chuyển đổi
                 </button>
-                <label htmlFor="file-upload" className="btn btn-sm btn-outline-primary border-radius">
-                  <i className="fas fa-upload"></i>Chọn file json
+                <label htmlFor="file-upload-tb" className="btn btn-sm btn-outline-primary border-radius" style={{ margin: "0 2px 0 2px" }}>
+                  <i className="fas fa-upload"></i>Chọn file tbDMDCQG (json)
                 </label>
                 <input
-                  id="file-upload"
+                  id="file-upload-tb"
                   className="btn btn-sm btn-outline-primary border-radius"
                   type="file" accept=".json"
                   value={value}
-                  onChange={this._handleSelectFile}
+                  onChange={this._handleSelectFileTb}
+                  style={{ display: 'none' }}
+                />
+
+                <label htmlFor="file-upload-banghi" className="btn btn-sm btn-outline-primary border-radius" style={{ margin: "0 2px 0 2px" }}>
+                  <i className="fas fa-upload"></i>Chọn file tbBanGhiDMDCQG (json)
+                </label>
+                <input
+                  id="file-upload-banghi"
+                  className="btn btn-sm btn-outline-primary border-radius"
+                  type="file" accept=".json"
+                  value={value}
+                  onChange={this._handleSelectFileBanGhi}
                   style={{ display: 'none' }}
                 />
               </div>
@@ -248,14 +303,19 @@ class ImportDMDCQG extends Component {
             <div className="card">
               <div className="card-header">
                 <React.Fragment><strong>Chú ý: Dữ liệu JSON phải được export dưới dạng 'JSON - mongoexport' && 'Export as document array'</strong><br /></React.Fragment>
-                {isLoad && <React.Fragment><i className="fas fa-hand-point-right"></i>&nbsp;<span>Load dữ liệu thành công, tiền hành chuyển đổi</span><br /></React.Fragment>}
-                {isCheck && <React.Fragment><i className="fas fa-hand-point-right"></i>&nbsp;<span>Chuyển đổi dữ liệu thành công tiến hành upload (vui lòng chọn từ 1-10 danh mục cần upload, để đảm bảo an toàn dữ liệu)</span><br /></React.Fragment>}
+                <React.Fragment><span className={isLoad ? "text-success" : ""}>1. Load dữ liệu tbDMDCQG</span><br /></React.Fragment>
+                <React.Fragment><span className={isLoadBanGhi ? "text-success" : ""}>2. Load dữ liệu tbBanGhiDMDCQG</span><br /></React.Fragment>
+                <React.Fragment><span className={isCheck && isCheckBanGhi ? "text-success" : ""}>3. Chuyển đổi dữ liệu</span><br /></React.Fragment>
+                <React.Fragment><span>4. Upload</span><br /></React.Fragment>
+
+                {isLoad && isLoadBanGhi && <React.Fragment><i className="fas fa-hand-point-right"></i>&nbsp;<span>Load dữ liệu thành công, tiền hành chuyển đổi</span><br /></React.Fragment>}
+                {isCheck && isCheckBanGhi && <React.Fragment><i className="fas fa-hand-point-right"></i>&nbsp;<span>Chuyển đổi dữ liệu thành công tiến hành upload (vui lòng chọn từ 1-10 danh mục cần upload, để đảm bảo an toàn dữ liệu)</span><br /></React.Fragment>}
               </div>
 
               {!!jsonData.length && <div className="card-body fix-first">
                 <div className='mb-1'>
                   <strong>*** Danh sách danh mục ***</strong><br />
-                  <span style={{ color: '#007bff' }}>Có sự khác biệt với danh mục đã đồng bộ trước đó&nbsp;{jsonData.length - listNonDiffrent.length}</span><br />
+                  {/* <span style={{ color: '#007bff' }}>Có sự khác biệt với danh mục đã đồng bộ trước đó&nbsp;{jsonData.length - listNonDiffrent.length}</span><br /> */}
                   <span style={{ color: '#28a745' }}>Upload thành công&nbsp;{listInserted.length}</span><br />
                   <span style={{ color: '#dc3545' }}>Upload không thành công&nbsp;{listError.length}</span><br />
                 </div>
