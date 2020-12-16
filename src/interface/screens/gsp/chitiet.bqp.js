@@ -9,7 +9,9 @@ import axios from 'axios';
 import moment from 'moment';
 import * as cmFunction from 'common/ulti/commonFunction';
 import * as tbDMDCQG from 'controller/services/tbDMDCQGServices';
+import * as tbBanGhiDMDCQG from 'controller/services/tbBanGhiDMDCQGServices';
 import { fetchToastNotify } from '../../../controller/redux/app-reducer';
+import queryString from 'query-string'
 
 class ChiTiet extends Component {
   constructor(props) {
@@ -18,6 +20,7 @@ class ChiTiet extends Component {
       isInsert: false,
       error: false,
       form: {},
+      danhsach: []
     };
   }
 
@@ -30,6 +33,11 @@ class ChiTiet extends Component {
     if (match.params.id !== prevProps.match.params.id) {
       this._init();
     }
+
+    let { location } = this.props
+    if (location !== prevProps.location) {
+      this._getDanhSachBanGhiDMDCQG(this._createFilter())
+    }
   }
 
   _init = async () => {
@@ -39,6 +47,8 @@ class ChiTiet extends Component {
       let data = await tbDMDCQG.getById(id);
       if (data) {
         this.state.form = data;
+        this.forceUpdate()
+        this._getDanhSachBanGhiDMDCQG(this._createFilter())
       }
       if (!data) this.state.error = true;
       this.forceUpdate();
@@ -52,8 +62,59 @@ class ChiTiet extends Component {
   };
 
 
+  _getDanhSachBanGhiDMDCQG = async (query) => {
+    let data = await tbBanGhiDMDCQG.getAll(query)
+    let danhsach = data && data._embedded ? data._embedded : [];
+    danhsach.forEach(function (v) { delete v._id; delete v._etag });
+    this.state.danhsach = danhsach
+    this.state._size = data._size || 0
+    this.state._total_pages = data._total_pages || 0
+    this.state.cbCheckAll = false
+    this.forceUpdate()
+  }
+
+  _createFilter = () => {
+    // let { data } = this.state
+    // let parsed = queryString.parse(this.props.location.search);
+    // let { page, pagesize, filter } = parsed
+    // filter = filter ? cmFunction.decode(filter) : filter
+    // parsed.page = parseInt(page) || CONSTANTS.DEFAULT_PAGE
+    // parsed.pagesize = parseInt(pagesize) || CONSTANTS.DEFAULT_PAGESIZE
+    // parsed.count = true
+    // // parsed.keys = JSON.stringify({ BanGhi: 0 })
+    // // parsed.sort_by = "STT"
+    // !filter ? delete parsed.filter : parsed.filter = filter
+    // this.state.page = parseInt(page) || CONSTANTS.DEFAULT_PAGE
+    // this.state.pagesize = parseInt(pagesize) || CONSTANTS.DEFAULT_PAGESIZE
+    // this.state.filter = filter
+    // this.forceUpdate()
+    // return new URLSearchParams(parsed).toString()
+
+    let { form } = this.state
+    let parsed = queryString.parse(this.props.location.search);
+    let { page, pagesize } = parsed
+    let filter = {}
+    parsed.page = parseInt(page) || CONSTANTS.DEFAULT_PAGE
+    parsed.pagesize = parseInt(pagesize) || CONSTANTS.DEFAULT_PAGESIZE
+    parsed.count = true
+    // parsed.keys = JSON.stringify({ BanGhi: 0 })
+    // parsed.sort_by = "STT"
+    if (form.CategoryCode) {
+      filter['CategoryCode'] = form.CategoryCode
+      // filter['$or'] = [
+      //   { 'CategoryName': cmFunction.regexText(data.CategoryCode) },
+      //   { 'CategoryCode': cmFunction.regexText(data.CategoryCode) }
+      // ]
+      parsed.filter = JSON.stringify(filter)
+    }
+    this.state.page = parseInt(page) || CONSTANTS.DEFAULT_PAGE
+    this.state.pagesize = parseInt(pagesize) || CONSTANTS.DEFAULT_PAGESIZE
+    this.forceUpdate()
+    return new URLSearchParams(parsed).toString()
+  }
+
   render() {
-    let { isInsert, form, error } = this.state;
+    let { danhsach, form, error } = this.state;
     if (error) return <Page404 />;
     let keyNonDisplay = ['_id', 'BanGhi', '_etag', 'code', 'createdAt', 'createdBy', 'isActive', 'modifiedAt', 'modifiedBy']
     try {
@@ -130,7 +191,7 @@ class ChiTiet extends Component {
             </div>
           </div>
 
-          {!!form.BanGhi && <div className="card">
+          {!!danhsach.length && <div className="card">
             <div
               className="card-header d-flex justify-content-between"
               data-toggle="collapse"
@@ -138,7 +199,7 @@ class ChiTiet extends Component {
               aria-expanded="true"
               aria-controls="collapseBanGhi"
             >
-              <span className="caption-subject">Bản ghi&nbsp;{form.BanGhi.length}</span>
+              <span className="caption-subject">Bản ghi&nbsp;{danhsach.length}</span>
               <span>
                 <i className="fas fa-chevron-up" />
                 <i className="fas fa-chevron-down" />
@@ -153,14 +214,14 @@ class ChiTiet extends Component {
                         <tr>
                           <th>STT</th>
                           {
-                            form.BanGhi[0] && Object.keys(form.BanGhi[0]).map(function (key, index) {
+                            danhsach[0] && Object.keys(danhsach[0]).map(function (key, index) {
                               return (<th key={index}>{key}</th>)
                             })
                           }
                         </tr>
                       </thead>
                       <tbody>
-                        {!!form.BanGhi && form.BanGhi.map((item, index) => {
+                        {!!danhsach && danhsach.map((item, index) => {
                           return <tr key={index} >
                             <td className='text-center'>{index + 1}</td>
                             {

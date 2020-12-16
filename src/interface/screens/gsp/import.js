@@ -52,7 +52,6 @@ class ImportDMDCQG extends Component {
   }
 
   _handleSelectFileTb = (event) => {
-    console.log(event.target.files)
     try {
       let fileObj = event.target.files[0];
       if (!fileObj) return
@@ -70,7 +69,7 @@ class ImportDMDCQG extends Component {
         })
       };
     } catch (e) {
-      console.log(e)
+      if (__DEV__) console.log(e)
       this.props.dispatch(fetchToastNotify({ type: CONSTANTS.ERROR, data: 'Có lỗi' }))
     }
   }
@@ -93,7 +92,7 @@ class ImportDMDCQG extends Component {
         })
       };
     } catch (e) {
-      console.log(e)
+      if (__DEV__) console.log(e)
       this.props.dispatch(fetchToastNotify({ type: CONSTANTS.ERROR, data: 'Có lỗi' }))
     }
   }
@@ -136,14 +135,6 @@ class ImportDMDCQG extends Component {
     }
     this.props.dispatch(fetchWait(true))
     try {
-      // let dataTmp = JSON.parse(data)
-      // let dataBanGhiTmp = JSON.parse(dataBanGhi)
-      // dataTmp.sort((a, b) => (a.TotalItem < b.TotalItem) ? 1 : ((b.TotalItem < a.TotalItem) ? -1 : 0));
-
-      // console.log('dataTmp ', dataTmp.length)
-      // console.log('dataBanGhiTmp ', dataBanGhiTmp.length)
-
-      //////////////////////////////////////////////
       let dataTmp = JSON.parse(data)
       let dataBanGhiTmp = JSON.parse(dataBanGhi)
       dataTmp.sort((a, b) => (a.TotalItem < b.TotalItem) ? 1 : ((b.TotalItem < a.TotalItem) ? -1 : 0));
@@ -177,7 +168,7 @@ class ImportDMDCQG extends Component {
         this.props.dispatch(fetchWait(false))
       })
     } catch (e) {
-      console.log(e)
+      if (__DEV__) console.log(e)
       this.state.isCheck = false
       this.state.isCheckBanGhi = false
       this.forceUpdate()
@@ -186,8 +177,8 @@ class ImportDMDCQG extends Component {
   }
 
   _handleUpload = async () => {
-    let { isLoad, isCheck, jsonData } = this.state
-    if (!isLoad || !isCheck) {
+    let { isLoad, isCheck, isLoadBanGhi, isCheckBanGhi, jsonData } = this.state
+    if (!isLoad || !isCheck || !isLoadBanGhi || !isCheckBanGhi) {
       this.props.dispatch(fetchToastNotify({ type: CONSTANTS.WARNING, data: 'Chọn file dữ liệu và thực hiện chuyển đổi' }))
       return
     }
@@ -223,10 +214,9 @@ class ImportDMDCQG extends Component {
         delete itemUpdate.checked
 
         if (dataExist.status === true) {
-          console.log(dataExist)
           delete itemUpdate._id
           delete itemUpdate._etag
-          let res = await tbDMDCQG.updatePutById(dataExist.code, itemUpdate)
+          let res = await tbDMDCQG.updatePutById(dataExist._id.$oid, itemUpdate)
           if (res) { listInserted.push(id) } else { listError.push(id) }
         } else if (dataExist.status === false) {
           delete itemUpdate.checked
@@ -240,7 +230,7 @@ class ImportDMDCQG extends Component {
         this.forceUpdate()
       })
     } catch (err) {
-      console.log('err', err)
+      if (__DEV__) console.log('err', err)
     }
   }
 

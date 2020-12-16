@@ -46,6 +46,7 @@ export const TB_LOG_API = '/tbLogApi'
 export const TB_LOG_DMDCQG_API = '/tbLogDMDCQGApi'
 export const TB_THONG_KE = '/tbThongKe'
 export const TB_DMDCQG = '/tbDMDCQG'
+export const TB_BAN_GHI_DMDCQG = '/tbBanGhiDMDCQG'
 export const IMPORT_EXCEL = '/import-excel'
 
 //QUAN TRI
