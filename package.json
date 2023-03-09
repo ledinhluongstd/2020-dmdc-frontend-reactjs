@@ -47,7 +47,7 @@
   "dependencies": {
     "@material-ui/core": "3.1.0",
     "@material-ui/icons": "3.0.1",
-    "@types/googlemaps": "3.30.11",
+    "@types/googlemaps": "3.43.3",
     "@types/markerclustererplus": "2.1.33",
     "axios": "^0.18.0",
     "bcryptjs": "^2.4.3",
